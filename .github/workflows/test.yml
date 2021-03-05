@@ -81,7 +81,7 @@ jobs:
           pr_assignee: ${{ env.AUTHOR }}
       - name: Update PR Template
         id: update_pr_template
-        uses: ./.github/actions/pr-Template
+        uses: ./.github/actions/pr-template
         with: 
           github_token: ${{ secrets.GITHUB_TOKEN }}
           pr_number: ${{ steps.create_pull_request.outputs.pr_number }}
