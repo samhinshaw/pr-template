@@ -10,7 +10,7 @@ try {
   // const requestUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/pulls/${PULL_NUMBER}`
 
   // template out PR body
-  const template = fs.readFileSync('./test.md', {encoding: 'utf-8'})
+  const template = fs.readFileSync('./templates/test.md', {encoding: 'utf-8'})
   console.log(template)
 
   // const res = axios.request({
