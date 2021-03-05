@@ -1,0 +1,88 @@
+name: Create Pull Request from Feature Branch
+on:
+  push:
+    branches:
+      - 'feature/*'
+jobs:
+  open-pull-request:
+    name: Create Pull Request from Feature Branch
+    runs-on: ubuntu-latest
+    steps:
+      # we need to check out the repo in order to create a PR
+      # this commit corresponds to the v2 tag as of 2020-05-21
+      - uses: actions/checkout@2ff2fbdea48a8f5da77a31e7dd5ecb46c017ffc3
+      - name: Get Author
+        run: |
+          echo "AUTHOR=${{ github.actor }}" >> $GITHUB_ENV
+      # get the uppercase type of branch from the title (e.g. BUG, TASK, US)
+      - name: Get Branch Type
+        run: |
+          # set the BRANCH_TYPE env variable to this output:
+          # note that this will ensure it is uppercase
+          BRANCH_TYPE=$(
+            # print the branch name and pipe it!
+            echo ${{ github.ref }} |
+            # first strip out the git flow branch prefix (e.g. "feature/"):
+            sed -E 's:(.*)(feature|release|hotfix)/(.*):\3:' |
+            # Then use regex to grab the TP Task # (at least 4 digits): ^([0-9]{4,})
+            # and the task type (US, TASK, etc): ([a-zA-Z]+)
+            # and the rest of the string
+            sed -E 's:^([0-9]{4,})-([a-zA-Z]+)-(.*):\2:' |
+            # and convert it to uppercase
+            sed 's/./\U&/g'
+          )
+          # export this variable to the subsequent action steps
+          echo "BRANCH_TYPE=${BRANCH_TYPE}" >> $GITHUB_ENV
+      # This will set the pull request title
+      # Important to note that head_ref only refers to the branch name on push events:
+      # https://stackoverflow.com/questions/58033366/how-to-get-current-branch-within-github-actions
+      # The environment variable PULL_REQUEST_TITLE will be used by the pull-request-action
+      - name: Derive Pull Request Title from branch name
+        run: |
+          # set the PR_TITLE env variable to this output:
+          PR_TITLE=$(
+            # print the branch name and pipe it!
+            echo ${{ github.ref }} |
+            # first strip out the git flow branch prefix (e.g. "feature/"):
+            sed -E 's:(.*)(feature|release|hotfix)/(.*):\3:' |
+            # Then use regex to grab the TP Task # (at least 4 digits): ^([0-9]{4,})
+            # and the task type (US, TASK, etc): ([a-zA-Z]+)
+            # and the rest of the string: (.*)
+            # and replace it with the following style:
+            # - the first group verbatim: \1 = 9999
+            # - the second group uppercased: \U\2 = US
+            # - the third group lowercased: \L\3 = rest-of-the-branch-name
+            sed -E 's:^([0-9]{4,})-([a-zA-Z]+)-(.*):\1 \U\2 | \L\3:' |
+            # finally, replace hyphens with spaces
+            sed 's/-/ /g'
+          )
+          # export this variable to the subsequent action steps
+          echo "PULL_REQUEST_TITLE=${PR_TITLE}" >> $GITHUB_ENV
+      - name: Get Pull Request Template
+        run: |
+          if [ $BRANCH_TYPE == 'BUG' ]
+          then
+              TEMPLATE_FILENAME=bug_pull_request_template.md
+          else
+              TEMPLATE_FILENAME=feature_pull_request_template.md
+          fi
+          # export the full path as an environment variable
+          echo "TEMPLATE_PATH=.github/PULL_REQUEST_TEMPLATE/${TEMPLATE_FILENAME}" >> $GITHUB_ENV
+      - name: Create Pull Request
+        id: create_pull_request
+        # this commit corresponds to the v2 tag as of 2020-05-21
+        uses: repo-sync/pull-request@d400018af6ad17232e88714bc3d2e5d3839e066b
+        with:
+          destination_branch: 'develop'
+          pr_title: ${{ env.PULL_REQUEST_TITLE }}
+          pr_template: ${{ env.TEMPLATE_PATH }}
+          pr_draft: true # Creates pull request as draft
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          pr_assignee: ${{ env.AUTHOR }}
+      - name: Update PR Template
+        id: update_pr_template
+        uses: ./.github/actions/pr-Template
+        with: 
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          pr_number: ${{ steps.create_pull_request.outputs.pr_number }}
+          branch_name: ${{ github.ref }}
