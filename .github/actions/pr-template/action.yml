@@ -1,13 +1,21 @@
-name: 'Hello World'
-description: 'Greet someone and record the time'
+name: 'PR Template'
+description: 'Update a PR template programmatically'
 inputs:
-  who-to-greet:  # id of input
-    description: 'Who to greet'
+  github_token: 
+    description: 'Github access token for interacting with GitHub API'
     required: true
-    default: 'World'
-outputs:
-  time: # id of output
-    description: 'The time we greeted you'
+    default: ''
+  pr_number: 
+    description: 'Number of the Pull Request that was opened'
+    required: true
+    default: ''
+  branch_name: 
+    description: 'Name of the branch the action is running on'
+    required: true
+    default: ''
+# outputs:
+#   time: # id of output
+#     description: 'The time we greeted you'
 runs:
   using: 'node12'
   main: 'index.js'
