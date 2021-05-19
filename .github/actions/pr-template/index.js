@@ -72,7 +72,8 @@ function createPrTitle(ticketId, branchName) {
  */
 function main() {
   try {
-    const branchName = core.getInput('branch_name');
+    // get the branch name and replace the preceding 'refs/head/' if present
+    const branchName = core.getInput('branch_name').replace(/^refs\/heads\//, '')
     const author = core.getInput('author');
 
     const ticketId = getJiraTicketId(branchName);
