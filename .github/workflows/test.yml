@@ -21,7 +21,7 @@ jobs:
         # this commit corresponds to the v2 tag as of 2020-05-21
         uses: repo-sync/pull-request@d400018af6ad17232e88714bc3d2e5d3839e066b
         with:
-          destination_branch: 'develop'
+          destination_branch: 'main'
           pr_title: ${{ steps.create_pr_description.outputs.pr_title }}
           pr_body: ${{ steps.create_pr_description.outputs.pr_body }}
           pr_draft: true # Creates pull request as draft
