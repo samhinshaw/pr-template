@@ -1,25 +1,19 @@
 {
-  "name": "hello-world-javascript-action",
+  "name": "pr-template",
   "version": "1.0.0",
-  "description": "This action prints \"Hello World\" or \"Hello\" + the name of a person to greet to the log.",
+  "description": "This templates out PRs for Celium's repository",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/actions/hello-world-javascript-action.git"
+    "url": "git+https://github.com/samhinshaw/pr-template"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/actions/hello-world-javascript-action/issues"
-  },
-  "homepage": "https://github.com/actions/hello-world-javascript-action#readme",
+  "author": "Sam Hinshaw",
   "dependencies": {
     "@actions/core": "^1.1.0",
-    "@actions/github": "^1.1.0",
-    "axios": "^0.21.1"
+    "@actions/github": "^1.1.0"
   }
 }
