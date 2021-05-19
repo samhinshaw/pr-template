@@ -1,7 +1,7 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 const fs = require('fs');
-const path = require('path')
+const path = require('path');
 
 /**
  * Extract a Celium Software jira ticket id from a branch name.
@@ -72,8 +72,13 @@ function createPrTitle(ticketId, branchName) {
  */
 function main() {
   try {
-    // get the branch name and replace the preceding 'refs/head/' if present
-    const branchName = core.getInput('branch_name').replace(/^refs\/heads\//, '')
+    // get the branch name and 
+    // - replace the preceding 'refs/head/' if present
+    // - replace the preceding 'feature/'
+    const branchName = core
+      .getInput('branch_name')
+      .replace(/^refs\/heads\//, '')
+      .replace(/^feature\//, '');
     const author = core.getInput('author');
 
     const ticketId = getJiraTicketId(branchName);
@@ -84,7 +89,7 @@ function main() {
       [/JIRA_TICKET_LINK/, ticketLink],
     ];
     // template out PR body
-    const TEMPLATE_PATH = './templates/test.md'
+    const TEMPLATE_PATH = './templates/test.md';
     const template = fs.readFileSync(path.join(__dirname, TEMPLATE_PATH), {
       encoding: 'utf-8',
     });
