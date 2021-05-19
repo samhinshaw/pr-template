@@ -8,9 +8,11 @@ inputs:
   branch_name: 
     description: 'Author of the branch'
     required: false
-# outputs:
-#   time: # id of output
-#     description: 'The time we greeted you'
+outputs:
+  pr_body: # id of output
+    description: 'A string of the templated PR body.'
+  pr_title:
+    description: 'The title of the PR.'
 runs:
   using: 'node12'
   main: 'index.js'

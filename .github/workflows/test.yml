@@ -10,11 +10,10 @@ jobs:
     steps:
       # we need to check out the repo in order to create a PR
       - uses: actions/checkout@v2
-      - name: Create PR Template
-        id: create_pr_template
+      - name: Create PR Description
+        id: create_pr_description
         uses: ./.github/actions/pr-template
         with: 
-          github_token: ${{ secrets.GITHUB_TOKEN }}
           branch_name: ${{ github.ref }}
           author: ${{ github.actor }}
       - name: Create Pull Request
@@ -23,8 +22,8 @@ jobs:
         uses: repo-sync/pull-request@d400018af6ad17232e88714bc3d2e5d3839e066b
         with:
           destination_branch: 'develop'
-          pr_title: ${{ env.PULL_REQUEST_TITLE }}
-          pr_template: ${{ env.TEMPLATE_PATH }}
+          pr_title: ${{ steps.create_pr_description.outputs.pr_title }}
+          pr_body: ${{ steps.create_pr_description.outputs.pr_body }}
           pr_draft: true # Creates pull request as draft
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          pr_assignee: ${{ env.AUTHOR }}
+          pr_assignee: ${{ github.actor }}

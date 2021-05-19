@@ -48,26 +48,52 @@ function fillOutPrTemplate(emptyTemplate, templateReplacements) {
   );
 }
 
+/**
+ * Create the PR title for a branch with or without a jira ticket
+ *
+ * @param {string} ticketId
+ * @param {string} branchName
+ * @returns
+ */
+function createPrTitle(ticketId, branchName) {
+  if (ticketId) {
+    const description = branchName
+      .replace(`${ticketId}-`, '')
+      .replace(/-/g, ' ');
+    const prTitle = `${ticketId} | ${description}`;
+    return prTitle;
+  }
+  const description = branchName.replace(/-/g, ' ');
+  return description;
+}
+
+/**
+ * Initiate GitHub Action
+ *
+ */
 function main() {
   try {
     const branchName = core.getInput('branch_name');
     const author = core.getInput('author');
 
-    const jiraTicketLink = formatJiraTicketLink(getJiraTicketId(branchName));
+    const ticketId = getJiraTicketId(branchName);
+    const ticketLink = formatJiraTicketLink(ticketId);
 
     const templateReplacements = [
       [/PR_AUTHOR/, author],
-      [/JIRA_TICKET_LINK/, jiraTicketLink],
+      [/JIRA_TICKET_LINK/, ticketLink],
     ];
-
     // template out PR body
     const TEMPLATE_PATH = './templates/test.md';
     const template = fs.readFileSync(TEMPLATE_PATH, {
       encoding: 'utf-8',
     });
-    const prDescription = fillOutPrTemplate(template, templateReplacements);
 
-    core.setOutput('pr_description', prDescription);
+    const prTitle = createPrTitle(ticketId, branchName);
+    const prBody = fillOutPrTemplate(template, templateReplacements);
+
+    core.setOutput('pr_title', prTitle);
+    core.setOutput('pr_body', prBody);
   } catch (error) {
     core.setFailed(error.message);
   }
