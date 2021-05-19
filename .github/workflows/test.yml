@@ -1,0 +1,29 @@
+name: Create Pull Request from Feature Branch
+on:
+  push:
+    branches:
+      - 'feature/*'
+jobs:
+  open-pull-request:
+    name: Create Pull Request from Feature Branch
+    runs-on: ubuntu-latest
+    steps:
+      # we need to check out the repo in order to create a PR
+      - uses: actions/checkout@v2
+      - name: Create PR Description
+        id: create_pr_description
+        uses: ./.github/actions/pr-template
+        with: 
+          branch_name: ${{ github.ref }}
+          author: ${{ github.actor }}
+      - name: Create Pull Request
+        id: create_pull_request
+        # this commit corresponds to the v2 tag as of 2020-05-21
+        uses: repo-sync/pull-request@d400018af6ad17232e88714bc3d2e5d3839e066b
+        with:
+          destination_branch: 'develop'
+          pr_title: ${{ steps.create_pr_description.outputs.pr_title }}
+          pr_body: ${{ steps.create_pr_description.outputs.pr_body }}
+          pr_draft: true # Creates pull request as draft
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          pr_assignee: ${{ github.actor }}
