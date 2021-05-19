@@ -1,8 +1,7 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
-
-const axios = require('axios');
 const fs = require('fs');
+const path = require('path')
 
 /**
  * Extract a Celium Software jira ticket id from a branch name.
@@ -84,8 +83,8 @@ function main() {
       [/JIRA_TICKET_LINK/, ticketLink],
     ];
     // template out PR body
-    const TEMPLATE_PATH = './templates/test.md';
-    const template = fs.readFileSync(TEMPLATE_PATH, {
+    const TEMPLATE_PATH = './templates/test.md'
+    const template = fs.readFileSync(path.join(__dirname, TEMPLATE_PATH), {
       encoding: 'utf-8',
     });
 
