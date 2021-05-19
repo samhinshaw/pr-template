@@ -5,7 +5,7 @@ inputs:
     description: 'Name of the branch the action is running on'
     required: true
     default: ''
-  branch_name: 
+  author: 
     description: 'Author of the branch'
     required: false
 outputs:
